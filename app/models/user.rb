@@ -4,5 +4,15 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :confirmable,
          :recoverable, :rememberable, :validatable
 
-  has_one :domain, dependent: :destroy
+  # Add these lines - one-to-one relationships
+  has_one :order, dependent: :destroy
+  has_one :domain, dependent: :destroy  # if you have domains
+
+  def has_order?
+    order.present?
+  end
+
+  def order_completed?
+    order&.status == 'completed'
+  end
 end

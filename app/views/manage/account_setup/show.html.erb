@@ -1,0 +1,472 @@
+
+<div class="account-setup-container">
+  <div class="progress-indicator">
+    <% 4.times do |i| %>
+      <div class="step-indicator <%= 'active' if i + 1 <= @step %> <%= 'completed' if i + 1 < @step %>">
+        <span class="step-number"><%= i + 1 %></span>
+        <span class="step-label">
+          <%= case i + 1
+              when 1 then 'Domain'
+              when 2 then 'Package'
+              when 3 then 'Implementation'
+              when 4 then 'Payment'
+              end %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="form-container">
+    <%= form_with model: @order, url: account_setup_path, local: true, class: 'account-setup-form' do |form| %>
+
+      <% case @step %>
+    <% when 1 %>
+        <div class="step-content">
+          <h2>Step 1: Select Your Domain Name</h2>
+          <p>Choose the domain name for your new website</p>
+
+          <% if current_user.domain.present? %>
+            <div class="existing-domain">
+              <h3>Your Domain:</h3>
+              <p><strong><%= current_user.domain.name %></strong></p>
+              <p>You already have a domain registered. Proceeding to package selection.</p>
+            </div>
+          <% else %>
+            <div class="form-group">
+              <%= label_tag :domain_name, "Domain Name:" %>
+              <%= text_field_tag :domain_name,
+                                 params[:domain_name] || @order.domain&.name,
+                                 placeholder: "example.com",
+                                 class: "form-control" %>
+            </div>
+          <% end %>
+        </div>
+
+      <% when 2 %>
+        <div class="step-content">
+          <h2>Step 2: Choose Your Package Type</h2>
+          <p>Select the package that best fits your needs</p>
+
+          <div class="package-options">
+            <% @package_types.each_with_index do |package, index| %>
+              <label class="package-card-label">
+                <%= form.radio_button :package_type, package,
+                                      id: "package_#{index}",
+                                      class: "package-radio-input" %>
+                <div class="package-card">
+                  <div class="package-header">
+                    <h3><%= package %></h3>
+                    <div class="package-price">£<%= package == 'Bespoke' ? '200' : '500' %></div>
+                  </div>
+                  <div class="package-description">
+                    <% if package == 'Bespoke' %>
+                      Custom designed website tailored to your specific requirements
+                    <% else %>
+                      Full e-commerce solution with shopping cart and payment processing
+                    <% end %>
+                  </div>
+                </div>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+      <% when 3 %>
+        <div class="step-content">
+          <h2>Step 3: How Do You Want It To Work?</h2>
+          <p>Choose your implementation preference</p>
+
+          <div class="implementation-options">
+            <% @implementation_types.each_with_index do |impl_type, index| %>
+              <label class="implementation-card-label">
+                <%= form.radio_button :implementation_type, impl_type,
+                                      id: "impl_#{index}",
+                                      class: "implementation-radio-input" %>
+                <div class="implementation-card">
+                  <div class="implementation-header">
+                    <h3><%= impl_type %></h3>
+                  </div>
+                  <div class="implementation-description">
+                    <% if impl_type == 'Do It Myself' %>
+                      <p>Full payment required upfront</p>
+                      <p class="price-info">
+                        <strong>Pay: £<%= @order.package_price / 100 %> (Full amount)</strong>
+                      </p>
+                    <% else %>
+                      <p>We'll help you set everything up</p>
+                      <p class="price-info">
+                        <strong>Pay: £<%= (@order.package_price * 0.2 / 100).to_i %> (20% deposit)</strong>
+                      </p>
+                    <% end %>
+                  </div>
+                </div>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+      <% when 4 %>
+        <div class="step-content">
+          <h2>Step 4: Payment</h2>
+
+          <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-row">
+              <span>Domain:</span>
+              <span><%= @order.domain&.name %></span>
+            </div>
+            <div class="summary-row">
+              <span>Package:</span>
+              <span><%= @order.package_type %></span>
+            </div>
+            <div class="summary-row">
+              <span>Implementation:</span>
+              <span><%= @order.implementation_type %></span>
+            </div>
+            <div class="summary-row total">
+        <span>
+          <% if @order.deposit_amount? %>
+            Deposit Amount:
+          <% else %>
+            Total Amount:
+          <% end %>
+        </span>
+              <span><strong>£<%= @order.amount_in_pounds %></strong></span>
+            </div>
+
+            <% if @order.deposit_amount? %>
+              <p class="deposit-note">
+                This is a 20% deposit. The remaining balance will be due upon completion.
+              </p>
+            <% end %>
+          </div>
+
+          <div id="payment-form" style="display: none;">
+            <div id="payment-element">
+              <!-- Stripe Elements will create form elements here -->
+            </div>
+
+            <button type="button" id="submit-payment" class="btn btn-primary payment-btn">
+              Pay £<%= @order.amount_in_pounds %>
+            </button>
+          </div>
+
+          <button type="button" id="setup-payment" class="btn btn-primary payment-btn">
+            Proceed to Payment
+          </button>
+
+          <div id="payment-messages" role="alert"></div>
+        </div>
+      <% end %>
+
+      <!-- Navigation buttons -->
+      <div class="form-navigation">
+        <% if @step > 1 %>
+          <%= link_to "Previous", account_setup_path(step: @order.previous_step),
+                      class: "btn btn-secondary" %>
+        <% end %>
+
+        <% if @step < 4 %>
+          <%= form.submit "Next", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+
+    <% end %>
+  </div>
+</div>
+
+<!-- Stripe payment JavaScript for step 4 -->
+<% if @step == 4 %>
+  <script src="https://js.stripe.com/v3/"></script>
+  <script type="text/javascript">
+      (function() {
+          console.log('Starting payment script...');
+
+          function waitForStripe(callback, maxAttempts = 50) {
+              let attempts = 0;
+
+              function checkStripe() {
+                  attempts++;
+                  console.log(`Checking for Stripe... attempt ${attempts}`);
+
+                  if (typeof Stripe !== 'undefined') {
+                      console.log('Stripe loaded successfully');
+                      callback();
+                  } else if (attempts < maxAttempts) {
+                      setTimeout(checkStripe, 100); // Check every 100ms
+                  } else {
+                      console.error('Stripe failed to load after maximum attempts');
+                      document.getElementById('payment-messages').textContent = 'Payment system failed to load. Please refresh the page.';
+                  }
+              }
+
+              checkStripe();
+          }
+
+          function initializePayment() {
+              console.log('Initializing payment...');
+
+              const stripe = Stripe('<%= Rails.application.credentials.stripe[:publishable_key] %>');
+              const setupButton = document.getElementById('setup-payment');
+              const paymentForm = document.getElementById('payment-form');
+              const messagesDiv = document.getElementById('payment-messages');
+
+              // Check if elements exist
+              if (!setupButton) {
+                  console.error('Setup button not found');
+                  setTimeout(initializePayment, 200); // Try again in 200ms
+                  return;
+              }
+
+              if (!paymentForm || !messagesDiv) {
+                  console.error('Payment form elements not found');
+                  setTimeout(initializePayment, 200);
+                  return;
+              }
+
+              console.log('All elements found, setting up event listeners...');
+
+              let elements;
+              let paymentElement;
+              let isProcessing = false;
+
+              // Clear any existing event listeners
+              const newSetupButton = setupButton.cloneNode(true);
+              setupButton.parentNode.replaceChild(newSetupButton, setupButton);
+
+              newSetupButton.addEventListener('click', async function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  if (isProcessing) {
+                      console.log('Already processing, ignoring click');
+                      return;
+                  }
+
+                  console.log('Setup payment button clicked');
+                  isProcessing = true;
+
+                  const originalText = this.textContent;
+                  this.textContent = 'Setting up payment...';
+                  this.disabled = true;
+
+                  try {
+                      console.log('Making fetch request...');
+                      const response = await fetch('<%= process_payment_account_setup_path %>', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+                          }
+                      });
+
+                      if (!response.ok) {
+                          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                      }
+
+                      const data = await response.json();
+                      console.log('Payment setup response:', data);
+
+                      if (data.error) {
+                          messagesDiv.textContent = data.error;
+                          this.disabled = false;
+                          this.textContent = originalText;
+                          return;
+                      }
+
+                      // Initialize Stripe Elements
+                      console.log('Creating Stripe elements...');
+                      elements = stripe.elements({
+                          clientSecret: data.client_secret
+                      });
+
+                      paymentElement = elements.create('payment');
+                      paymentElement.mount('#payment-element');
+
+                      // Show payment form
+                      this.style.display = 'none';
+                      paymentForm.style.display = 'block';
+
+                      // Set up submit button
+                      const submitButton = document.getElementById('submit-payment');
+                      if (submitButton) {
+                          // Remove existing listeners by cloning
+                          const newSubmitButton = submitButton.cloneNode(true);
+                          submitButton.parentNode.replaceChild(newSubmitButton, submitButton);
+
+                          newSubmitButton.addEventListener('click', async function(e) {
+                              e.preventDefault();
+
+                              const submitOriginalText = this.textContent;
+                              this.disabled = true;
+                              this.textContent = 'Processing...';
+
+                              try {
+                                  const { error } = await stripe.confirmPayment({
+                                      elements,
+                                      confirmParams: {
+                                          return_url: '<%= payment_success_account_setup_url(order_id: @order.id) %>'
+                                      }
+                                  });
+
+                                  if (error) {
+                                      messagesDiv.textContent = error.message;
+                                      this.disabled = false;
+                                      this.textContent = submitOriginalText;
+                                  }
+                              } catch (err) {
+                                  console.error('Payment confirmation error:', err);
+                                  messagesDiv.textContent = 'Payment failed: ' + err.message;
+                                  this.disabled = false;
+                                  this.textContent = submitOriginalText;
+                              }
+                          });
+                      }
+
+                      console.log('Payment setup complete');
+
+                  } catch (error) {
+                      console.error('Setup error:', error);
+                      messagesDiv.textContent = 'Error setting up payment: ' + error.message;
+                      this.disabled = false;
+                      this.textContent = originalText;
+                  } finally {
+                      isProcessing = false;
+                  }
+              });
+
+              console.log('Payment initialization complete');
+          }
+
+          // Wait for both DOM and Stripe to be ready
+          function initialize() {
+              console.log('Document ready state:', document.readyState);
+              waitForStripe(initializePayment);
+          }
+
+          // Handle different loading states
+          if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', initialize);
+          } else {
+              // DOM is already ready, but we still need to wait for Stripe
+              initialize();
+          }
+
+      })();
+  </script>
+<% end %>
+
+<style>
+    .package-card-label {
+        display: block;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+
+    .package-radio-input {
+        display: none;
+    }
+
+    .package-card {
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .package-card:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+
+    .package-radio-input:checked + .package-card {
+        border-color: #007bff;
+        background-color: #e6f3ff;
+        box-shadow: 0 0 10px rgba(0,123,255,0.3);
+    }
+
+    .package-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .package-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .package-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .package-description {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .implementation-card-label {
+        display: block;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+
+    .implementation-radio-input {
+        display: none;
+    }
+
+    .implementation-card {
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .implementation-card:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+
+    .implementation-radio-input:checked + .implementation-card {
+        border-color: #007bff;
+        background-color: #e6f3ff;
+        box-shadow: 0 0 10px rgba(0,123,255,0.3);
+    }
+
+    .implementation-header {
+        margin-bottom: 1rem;
+    }
+
+    .implementation-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .implementation-description {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .implementation-description p {
+        margin: 0.5rem 0;
+    }
+
+    .price-info {
+        font-weight: bold;
+        color: #28a745;
+        margin-top: 0.5rem;
+    }
+
+    .implementation-options {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr 1fr;
+    }
+</style>

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  domain: one
+  package_type: MyString
+  implementation_type: MyString
+  step: 1
+  amount_cents: 1
+  stripe_payment_intent_id: MyString
+  status: MyString
+
+two:
+  user: two
+  domain: two
+  package_type: MyString
+  implementation_type: MyString
+  step: 1
+  amount_cents: 1
+  stripe_payment_intent_id: MyString
+  status: MyString

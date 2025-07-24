@@ -8,3 +8,202 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+.account-setup-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.progress-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+
+    .step-indicator {
+        flex: 1;
+        text-align: center;
+        position: relative;
+
+        &:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #ddd;
+            z-index: -1;
+        }
+
+        &.completed::after {
+            background: #28a745;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            color: white;
+            font-weight: bold;
+        }
+
+        &.active .step-number {
+            background: #007bff;
+        }
+
+        &.completed .step-number {
+            background: #28a745;
+        }
+
+        .step-label {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+    }
+}
+
+.package-options, .implementation-options {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.package-card, .implementation-card {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: #007bff;
+    }
+
+    &.selected {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+}
+
+.package-radio, .implementation-radio {
+    display: none;
+}
+
+.order-summary {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+
+        &.total {
+            border-top: 1px solid #ddd;
+            padding-top: 0.5rem;
+            margin-top: 1rem;
+            font-size: 1.125rem;
+        }
+    }
+
+    .deposit-note {
+        font-style: italic;
+        color: #6c757d;
+        margin-top: 1rem;
+    }
+}
+
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+
+    .btn {
+        padding: 0.75rem 2rem;
+    }
+}
+
+#payment-element {
+    margin-bottom: 1rem;
+}
+
+.payment-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.125rem;
+}
+
+#payment-messages {
+    color: #dc3545;
+    margin-top: 1rem;
+}
+
+.package-card, .implementation-card {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+        border-color: #007bff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    &.selected {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+    }
+}
+
+.package-radio, .implementation-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.package-label, .implementation-label {
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin: 0;
+}
+
+.package-header, .implementation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h3 {
+        margin: 0;
+        color: #333;
+    }
+}
+
+.package-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.package-description, .implementation-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.price-info {
+    font-weight: bold;
+    color: #28a745;
+    margin-top: 0.5rem;
+}
