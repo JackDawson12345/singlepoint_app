@@ -1,5 +1,6 @@
 class Domain < ApplicationRecord
   belongs_to :user
+  has_one :website, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
   validates :name, format: {

@@ -1,0 +1,115 @@
+<!-- app/views/manage/website_builder/show.html.erb -->
+<div class="container mx-auto px-6 py-8">
+  <div class="bg-white rounded-lg shadow-lg">
+    <!-- Header -->
+    <div class="p-6 border-b">
+      <div class="flex justify-between items-start">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @website.title %></h1>
+          <div class="flex items-center space-x-4 text-sm text-gray-600">
+            <span>Domain: <%= @website.domain.name %></span>
+            <span>Template: <%= @website.template.name %></span>
+            <span class="px-3 py-1 rounded-full <%= @website.published? ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+              <%= @website.status.humanize %>
+            </span>
+          </div>
+        </div>
+
+        <div class="flex space-x-3">
+          <%= link_to "Edit", edit_manage_website_builder_path(@website),
+                      class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium" %>
+
+          <%= link_to "Preview", preview_manage_website_builder_path(@website),
+                      target: "_blank",
+                      class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium" %>
+
+          <% if @website.published? %>
+            <%= link_to "Unpublish", unpublish_manage_website_builder_path(@website),
+                        method: :patch,
+                        class: "bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium" %>
+
+            <a href="http://<%= @website.domain.name %>" target="_blank"
+               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+              Visit Live Site
+            </a>
+          <% else %>
+            <%= link_to "Publish", publish_manage_website_builder_path(@website),
+                        method: :patch,
+                        class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium" %>
+          <% end %>
+
+          <%= link_to "Delete", manage_website_builder_path(@website),
+                      method: :delete,
+                      data: { confirm: "Are you sure? This cannot be undone." },
+                      class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Website Info -->
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Website Details</h3>
+          <dl class="space-y-3">
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Created</dt>
+              <dd class="text-sm text-gray-900"><%= @website.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+            </div>
+
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
+              <dd class="text-sm text-gray-900"><%= @website.updated_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+            </div>
+
+            <% if @website.published? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">Published</dt>
+                <dd class="text-sm text-gray-900"><%= @website.published_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+              </div>
+            <% end %>
+
+            <div>
+              <dt class="text-sm font-medium text-gray-500">Description</dt>
+              <dd class="text-sm text-gray-900">
+                <%= @website.description.present? ? @website.description : "No description provided" %>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-4">Current Customizations</h3>
+          <dl class="space-y-3">
+            <% @website.customizations.each do |key, value| %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500"><%= key.humanize %></dt>
+                <dd class="text-sm text-gray-900">
+                  <% if key.include?('color') %>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-4 h-4 rounded border" style="background-color: <%= value %>"></div>
+                      <span><%= value %></span>
+                    </div>
+                  <% else %>
+                    <%= value %>
+                  <% end %>
+                </dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="p-6 border-t">
+      <h3 class="text-lg font-semibold mb-4">Website Preview</h3>
+      <div class="border rounded-lg overflow-hidden" style="height: 500px;">
+        <iframe src="<%= preview_manage_website_builder_path(@website) %>"
+                class="w-full h-full"
+                frameborder="0">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</div>

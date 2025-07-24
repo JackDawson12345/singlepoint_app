@@ -1,3 +1,4 @@
+# config/routes.rb
 Rails.application.routes.draw do
   devise_for :users, controllers: {
     confirmations: 'users/confirmations',
@@ -7,10 +8,31 @@ Rails.application.routes.draw do
   namespace :manage do
     get "domains/index"
     get "panel/index"
+
+    # Website Builder routes
+    resources :website_builder do
+      collection do
+        get :choose_template
+      end
+
+      member do
+        get :preview
+        patch :publish
+        patch :unpublish
+        post :update_preview
+      end
+    end
   end
 
   namespace :admin do
     get "dashboard/index"
+
+    # Admin template management
+    resources :templates do
+      member do
+        patch :toggle_active
+      end
+    end
   end
 
   get "main/home"

@@ -1,0 +1,20 @@
+<!-- app/views/manage/website_builder/preview.html.erb -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= @website.title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    <%= @website.compiled_css %>
+  </style>
+</head>
+<body>
+<%= @website.compiled_html.html_safe %>
+
+<script>
+    <%= @website.compiled_js %>
+</script>
+</body>
+</html>
+

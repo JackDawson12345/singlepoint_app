@@ -1,0 +1,62 @@
+<!-- app/views/manage/website_builder/index.html.erb -->
+<div class="container mx-auto px-6 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">My Websites</h1>
+    <%= link_to "Create New Website", new_manage_website_builder_path,
+                class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium" %>
+  </div>
+
+  <% if @websites.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @websites.each do |website| %>
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="h-48 bg-gray-200 flex items-center justify-center">
+            <% if website.template.preview_image_url.present? %>
+              <%= image_tag website.template.preview_image_url, class: "w-full h-full object-cover" %>
+            <% else %>
+              <span class="text-gray-500">Preview</span>
+            <% end %>
+          </div>
+
+          <div class="p-6">
+            <h3 class="text-xl font-semibold mb-2"><%= website.title %></h3>
+            <p class="text-gray-600 mb-2">Template: <%= website.template.name %></p>
+            <p class="text-gray-600 mb-4">Domain: <%= website.domain.name %></p>
+
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-3 py-1 rounded-full text-sm
+                          <%= website.published? ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                <%= website.status.humanize %>
+              </span>
+
+              <% if website.published? %>
+                <span class="text-sm text-gray-500">
+                  Published <%= time_ago_in_words(website.published_at) %> ago
+                </span>
+              <% end %>
+            </div>
+
+            <div class="flex space-x-2">
+              <%= link_to "Edit", edit_manage_website_builder_path(website),
+                          class: "flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded font-medium" %>
+              <%= link_to "View", manage_website_builder_path(website),
+                          class: "flex-1 bg-gray-600 hover:bg-gray-700 text-white text-center py-2 px-4 rounded font-medium" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-medium text-gray-900 mb-2">No websites yet</h3>
+      <p class="text-gray-600 mb-6">Get started by creating your first website from our template collection.</p>
+      <%= link_to "Create Your First Website", new_manage_website_builder_path,
+                  class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium" %>
+    </div>
+  <% end %>
+</div>

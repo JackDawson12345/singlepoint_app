@@ -7,6 +7,7 @@ class User < ApplicationRecord
   # Add these lines - one-to-one relationships
   has_one :order, dependent: :destroy
   has_one :domain, dependent: :destroy  # if you have domains
+  has_many :websites, dependent: :destroy
 
   def has_order?
     order.present?
