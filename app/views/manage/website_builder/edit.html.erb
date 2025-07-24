@@ -1,45 +1,45 @@
-<!-- app/views/manage/website_builder/edit.html.erb - Updated form section -->
+<div style="display: flex;">
+  <div style="width: 25%">
+    <%= form_with model: [@website], url: website_builder_path(@website),
+                  method: :patch, local: false, id: "website-form",
+                  class: "customization-form" do |f| %>
 
-<%= form_with model: [@website], url: manage_website_builder_path(@website),
-              method: :patch, local: false, id: "website-form",
-              class: "customization-form" do |f| %>
-
-  <!-- Basic Information -->
-  <div class="form-section">
-    <h3 class="section-title">
-      <span class="section-icon">ℹ️</span>
-      Basic Information
-    </h3>
-
-    <div class="form-group">
-      <%= f.label :title, class: "form-label" %>
-      <%= f.text_field :title, class: "form-input" %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :description, class: "form-label" %>
-      <%= f.text_area :description, rows: 3, class: "form-textarea",
-                      placeholder: "Brief description of your website" %>
-    </div>
-  </div>
-
-  <!-- Dynamic Template Fields -->
-  <% if @website.template.customizable_fields.present? %>
-    <% grouped_fields = @website.template.parsed_customizable_fields.group_by { |field|
-      case field['name']
-      when /company|business|brand/i then 'Company Info'
-      when /service/i then 'Services'
-      when /contact|email|phone|address/i then 'Contact Info'
-      when /hero|title|subtitle/i then 'Hero Section'
-      when /about/i then 'About Section'
-      when /color|font|theme/i then 'Design'
-      else 'Content'
-      end
-    } %>
-
-    <% grouped_fields.each do |group_name, fields| %>
+      <!-- Basic Information -->
       <div class="form-section">
         <h3 class="section-title">
+          <span class="section-icon">ℹ️</span>
+          Basic Information
+        </h3>
+
+        <div class="form-group">
+          <%= f.label :title, class: "form-label" %>
+          <%= f.text_field :title, class: "form-input" %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :description, class: "form-label" %>
+          <%= f.text_area :description, rows: 3, class: "form-textarea",
+                          placeholder: "Brief description of your website" %>
+        </div>
+      </div>
+
+      <!-- Dynamic Template Fields -->
+      <% if @website.template.customizable_fields.present? %>
+        <% grouped_fields = @website.template.parsed_customizable_fields.group_by { |field|
+          case field['name']
+          when /company|business|brand/i then 'Company Info'
+          when /service/i then 'Services'
+          when /contact|email|phone|address/i then 'Contact Info'
+          when /hero|title|subtitle/i then 'Hero Section'
+          when /about/i then 'About Section'
+          when /color|font|theme/i then 'Design'
+          else 'Content'
+          end
+        } %>
+
+        <% grouped_fields.each do |group_name, fields| %>
+          <div class="form-section">
+            <h3 class="section-title">
           <span class="section-icon">
             <%= case group_name
                 when 'Company Info' then '🏢'
@@ -51,369 +51,369 @@
                 else '✏️'
                 end %>
           </span>
-          <%= group_name %>
-        </h3>
+              <%= group_name %>
+            </h3>
 
-        <% fields.each do |field| %>
-          <div class="form-group">
-            <label class="form-label">
-              <%= field['label'] %>
-              <% if field['type'] == 'email' %>
-                <span class="field-hint">📧</span>
-              <% elsif field['type'] == 'color' %>
-                <span class="field-hint">🎨</span>
-              <% end %>
-            </label>
+            <% fields.each do |field| %>
+              <div class="form-group">
+                <label class="form-label">
+                  <%= field['label'] %>
+                  <% if field['type'] == 'email' %>
+                    <span class="field-hint">📧</span>
+                  <% elsif field['type'] == 'color' %>
+                    <span class="field-hint">🎨</span>
+                  <% end %>
+                </label>
 
-            <% field_name = "website[customizations][#{field['name']}]" %>
-            <% field_value = @website.customizations[field['name']] || field['default'] %>
+                <% field_name = "website[customizations][#{field['name']}]" %>
+                <% field_value = @website.customizations[field['name']] || field['default'] %>
 
-            <% case field['type'] %>
-            <% when 'text' %>
-              <%= text_field_tag field_name, field_value,
-                                 class: "form-input",
-                                 placeholder: field['default'],
-                                 data: { live_preview: true } %>
+                <% case field['type'] %>
+                <% when 'text' %>
+                  <%= text_field_tag field_name, field_value,
+                                     class: "form-input",
+                                     placeholder: field['default'],
+                                     data: { live_preview: true } %>
 
-            <% when 'textarea' %>
-              <%= text_area_tag field_name, field_value,
-                                rows: 4,
-                                class: "form-textarea",
-                                placeholder: field['default'],
-                                data: { live_preview: true } %>
-
-            <% when 'email' %>
-              <%= email_field_tag field_name, field_value,
-                                  class: "form-input",
-                                  placeholder: field['default'],
-                                  data: { live_preview: true } %>
-
-            <% when 'color' %>
-              <div class="color-input-group">
-                <%= color_field_tag field_name, field_value,
-                                    class: "color-input",
+                <% when 'textarea' %>
+                  <%= text_area_tag field_name, field_value,
+                                    rows: 4,
+                                    class: "form-textarea",
+                                    placeholder: field['default'],
                                     data: { live_preview: true } %>
-                <span class="color-value"><%= field_value %></span>
-              </div>
 
-            <% when 'select' %>
-              <%= select_tag field_name,
-                             options_for_select(field['options'], field_value),
-                             class: "form-select",
-                             data: { live_preview: true } %>
+                <% when 'email' %>
+                  <%= email_field_tag field_name, field_value,
+                                      class: "form-input",
+                                      placeholder: field['default'],
+                                      data: { live_preview: true } %>
 
-            <% else %>
-              <%= text_field_tag field_name, field_value,
-                                 class: "form-input",
-                                 placeholder: field['default'],
+                <% when 'color' %>
+                  <div class="color-input-group">
+                    <%= color_field_tag field_name, field_value,
+                                        class: "color-input",
+                                        data: { live_preview: true } %>
+                    <span class="color-value"><%= field_value %></span>
+                  </div>
+
+                <% when 'select' %>
+                  <%= select_tag field_name,
+                                 options_for_select(field['options'], field_value),
+                                 class: "form-select",
                                  data: { live_preview: true } %>
-            <% end %>
 
-            <% if field['help_text'].present? %>
-              <div class="field-help">
-                <%= field['help_text'] %>
+                <% else %>
+                  <%= text_field_tag field_name, field_value,
+                                     class: "form-input",
+                                     placeholder: field['default'],
+                                     data: { live_preview: true } %>
+                <% end %>
+
+                <% if field['help_text'].present? %>
+                  <div class="field-help">
+                    <%= field['help_text'] %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           </div>
         <% end %>
+      <% end %>
+
+      <!-- Design Customization (Standard) -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <span class="section-icon">🎨</span>
+          Theme Settings
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Primary Color</label>
+          <div class="color-input-group">
+            <%= color_field_tag "website[customizations][primary_color]",
+                                @website.customizations['primary_color'] || '#3498db',
+                                class: "color-input", data: { live_preview: true } %>
+            <span class="color-value"><%= @website.customizations['primary_color'] || '#3498db' %></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Secondary Color</label>
+          <div class="color-input-group">
+            <%= color_field_tag "website[customizations][secondary_color]",
+                                @website.customizations['secondary_color'] || '#2c3e50',
+                                class: "color-input", data: { live_preview: true } %>
+            <span class="color-value"><%= @website.customizations['secondary_color'] || '#2c3e50' %></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Font Family</label>
+          <%= select_tag "website[customizations][font_family]",
+                         options_for_select([
+                                              ['Arial', 'Arial'],
+                                              ['Helvetica', 'Helvetica'],
+                                              ['Georgia', 'Georgia'],
+                                              ['Times New Roman', 'Times New Roman'],
+                                              ['Roboto', 'Roboto'],
+                                              ['Open Sans', 'Open Sans'],
+                                              ['Lato', 'Lato'],
+                                              ['Montserrat', 'Montserrat'],
+                                              ['Poppins', 'Poppins']
+                                            ], @website.customizations['font_family'] || 'Arial'),
+                         { class: "form-select", data: { live_preview: true } } %>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Save Changes", class: "save-btn" %>
+        <button type="button" class="preview-changes-btn" onclick="updatePreview()">
+          Preview Changes
+        </button>
       </div>
     <% end %>
-  <% end %>
 
-  <!-- Design Customization (Standard) -->
-  <div class="form-section">
-    <h3 class="section-title">
-      <span class="section-icon">🎨</span>
-      Theme Settings
-    </h3>
+    <script>
+        // Add this JavaScript to your edit.html.erb file or create a separate JS file
 
-    <div class="form-group">
-      <label class="form-label">Primary Color</label>
-      <div class="color-input-group">
-        <%= color_field_tag "website[customizations][primary_color]",
-                            @website.customizations['primary_color'] || '#3498db',
-                            class: "color-input", data: { live_preview: true } %>
-        <span class="color-value"><%= @website.customizations['primary_color'] || '#3498db' %></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Secondary Color</label>
-      <div class="color-input-group">
-        <%= color_field_tag "website[customizations][secondary_color]",
-                            @website.customizations['secondary_color'] || '#2c3e50',
-                            class: "color-input", data: { live_preview: true } %>
-        <span class="color-value"><%= @website.customizations['secondary_color'] || '#2c3e50' %></span>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Font Family</label>
-      <%= select_tag "website[customizations][font_family]",
-                     options_for_select([
-                                          ['Arial', 'Arial'],
-                                          ['Helvetica', 'Helvetica'],
-                                          ['Georgia', 'Georgia'],
-                                          ['Times New Roman', 'Times New Roman'],
-                                          ['Roboto', 'Roboto'],
-                                          ['Open Sans', 'Open Sans'],
-                                          ['Lato', 'Lato'],
-                                          ['Montserrat', 'Montserrat'],
-                                          ['Poppins', 'Poppins']
-                                        ], @website.customizations['font_family'] || 'Arial'),
-                     { class: "form-select", data: { live_preview: true } } %>
-    </div>
-  </div>
-
-  <div class="form-actions">
-    <%= f.submit "Save Changes", class: "save-btn" %>
-    <button type="button" class="preview-changes-btn" onclick="updatePreview()">
-      Preview Changes
-    </button>
-  </div>
-<% end %>
-
-<script>
-    // Add this JavaScript to your edit.html.erb file or create a separate JS file
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the website builder
-        initializeWebsiteBuilder();
-    });
-
-    function initializeWebsiteBuilder() {
-        setupLivePreview();
-        setupDevicePreview();
-        setupFormEnhancements();
-        setupColorPickers();
-    }
-
-    // ================================
-    // LIVE PREVIEW FUNCTIONALITY
-    // ================================
-
-    function setupLivePreview() {
-        const form = document.getElementById('website-form');
-        const previewFrame = document.getElementById('preview-frame');
-
-        if (!form || !previewFrame) return;
-
-        // Debounce function to limit API calls
-        let updateTimeout;
-
-        // Listen for changes on inputs with live preview
-        document.querySelectorAll('[data-live-preview]').forEach(input => {
-            input.addEventListener('input', function() {
-                // Show loading state
-                showLoadingState(input);
-
-                // Clear previous timeout
-                clearTimeout(updateTimeout);
-
-                // Set new timeout
-                updateTimeout = setTimeout(() => {
-                    updatePreview();
-                    hideLoadingState(input);
-                }, 500); // Wait 500ms after user stops typing
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the website builder
+            initializeWebsiteBuilder();
         });
 
-        // Handle color picker changes immediately
-        document.querySelectorAll('input[type="color"]').forEach(colorInput => {
-            colorInput.addEventListener('change', function() {
-                updatePreview();
-                updateColorValue(this);
-            });
-        });
-    }
-
-    function updatePreview() {
-        const form = document.getElementById('website-form');
-        const previewFrame = document.getElementById('preview-frame');
-        const loadingOverlay = document.getElementById('loading-overlay');
-
-        if (!form || !previewFrame) return;
-
-        // Show loading overlay
-        if (loadingOverlay) {
-            loadingOverlay.classList.add('active');
+        function initializeWebsiteBuilder() {
+            setupLivePreview();
+            setupDevicePreview();
+            setupFormEnhancements();
+            setupColorPickers();
         }
 
-        const formData = new FormData(form);
-        const websiteId = window.location.pathname.split('/').pop().split('/')[0];
+        // ================================
+        // LIVE PREVIEW FUNCTIONALITY
+        // ================================
 
-        fetch(`/manage/website_builder/${websiteId}/update_preview`, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
-                'Accept': 'application/json'
+        function setupLivePreview() {
+            const form = document.getElementById('website-form');
+            const previewFrame = document.getElementById('preview-frame');
+
+            if (!form || !previewFrame) return;
+
+            // Debounce function to limit API calls
+            let updateTimeout;
+
+            // Listen for changes on inputs with live preview
+            document.querySelectorAll('[data-live-preview]').forEach(input => {
+                input.addEventListener('input', function() {
+                    // Show loading state
+                    showLoadingState(input);
+
+                    // Clear previous timeout
+                    clearTimeout(updateTimeout);
+
+                    // Set new timeout
+                    updateTimeout = setTimeout(() => {
+                        updatePreview();
+                        hideLoadingState(input);
+                    }, 500); // Wait 500ms after user stops typing
+                });
+            });
+
+            // Handle color picker changes immediately
+            document.querySelectorAll('input[type="color"]').forEach(colorInput => {
+                colorInput.addEventListener('change', function() {
+                    updatePreview();
+                    updateColorValue(this);
+                });
+            });
+        }
+
+        function updatePreview() {
+            const form = document.getElementById('website-form');
+            const previewFrame = document.getElementById('preview-frame');
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            if (!form || !previewFrame) return;
+
+            // Show loading overlay
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('active');
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Reload the preview frame
-                previewFrame.contentWindow.location.reload();
 
-                // Hide loading overlay after a short delay
-                setTimeout(() => {
+            const formData = new FormData(form);
+            const websiteId = window.location.pathname.split('/').pop().split('/')[0];
+
+            fetch(`/manage/website_builder/${websiteId}/update_preview`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Reload the preview frame
+                    previewFrame.contentWindow.location.reload();
+
+                    // Hide loading overlay after a short delay
+                    setTimeout(() => {
+                        if (loadingOverlay) {
+                            loadingOverlay.classList.remove('active');
+                        }
+                    }, 800);
+                })
+                .catch(error => {
+                    console.error('Preview update error:', error);
                     if (loadingOverlay) {
                         loadingOverlay.classList.remove('active');
                     }
-                }, 800);
-            })
-            .catch(error => {
-                console.error('Preview update error:', error);
-                if (loadingOverlay) {
-                    loadingOverlay.classList.remove('active');
-                }
-                showNotification('Error updating preview', 'error');
-            });
-    }
-
-    // ================================
-    // DEVICE PREVIEW CONTROLS
-    // ================================
-
-    function setupDevicePreview() {
-        const deviceButtons = document.querySelectorAll('.device-btn');
-        const previewFrame = document.getElementById('preview-frame');
-
-        if (!previewFrame) return;
-
-        deviceButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const device = this.dataset.device;
-
-                // Update active button
-                deviceButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-
-                // Update frame size
-                previewFrame.className = `preview-frame ${device}`;
-            });
-        });
-    }
-
-    // ================================
-    // FORM ENHANCEMENTS
-    // ================================
-
-    function setupFormEnhancements() {
-        const form = document.getElementById('website-form');
-
-        if (!form) return;
-
-        // Handle form submission
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            saveChanges();
-        });
-
-        // Auto-save functionality (optional)
-        let autoSaveTimeout;
-        form.addEventListener('input', function() {
-            clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(() => {
-                // Auto-save after 10 seconds of inactivity
-                // saveChanges(true); // Uncomment to enable auto-save
-            }, 10000);
-        });
-    }
-
-    function saveChanges(isAutoSave = false) {
-        const form = document.getElementById('website-form');
-        const saveBtn = document.querySelector('.save-btn');
-
-        if (!form) return;
-
-        // Update button state
-        const originalText = saveBtn.textContent;
-        saveBtn.textContent = isAutoSave ? 'Auto-saving...' : 'Saving...';
-        saveBtn.disabled = true;
-
-        fetch(form.action, {
-            method: 'PATCH',
-            body: new FormData(form),
-            headers: {
-                'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
-                'Accept': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // Update preview
-                    updatePreview();
-
-                    // Show success message
-                    showNotification(
-                        isAutoSave ? 'Changes auto-saved' : 'Website updated successfully!',
-                        'success'
-                    );
-                } else {
-                    showNotification('Error updating website', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Save error:', error);
-                showNotification('Error saving changes', 'error');
-            })
-            .finally(() => {
-                // Reset button state
-                saveBtn.textContent = originalText;
-                saveBtn.disabled = false;
-            });
-    }
-
-    // ================================
-    // COLOR PICKER ENHANCEMENTS
-    // ================================
-
-    function setupColorPickers() {
-        document.querySelectorAll('input[type="color"]').forEach(colorInput => {
-            // Update color value display on change
-            colorInput.addEventListener('input', function() {
-                updateColorValue(this);
-            });
-
-            // Initialize color value display
-            updateColorValue(colorInput);
-        });
-    }
-
-    function updateColorValue(colorInput) {
-        const colorValue = colorInput.parentElement.querySelector('.color-value');
-        if (colorValue) {
-            colorValue.textContent = colorInput.value;
-            colorValue.style.borderColor = colorInput.value;
+                    showNotification('Error updating preview', 'error');
+                });
         }
-    }
 
-    // ================================
-    // LOADING STATES
-    // ================================
+        // ================================
+        // DEVICE PREVIEW CONTROLS
+        // ================================
 
-    function showLoadingState(input) {
-        input.setAttribute('data-loading', 'true');
-    }
+        function setupDevicePreview() {
+            const deviceButtons = document.querySelectorAll('.device-btn');
+            const previewFrame = document.getElementById('preview-frame');
 
-    function hideLoadingState(input) {
-        input.removeAttribute('data-loading');
-    }
+            if (!previewFrame) return;
 
-    // ================================
-    // NOTIFICATIONS
-    // ================================
+            deviceButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const device = this.dataset.device;
 
-    function showNotification(message, type = 'info') {
-        // Remove existing notifications
-        document.querySelectorAll('.notification').forEach(n => n.remove());
+                    // Update active button
+                    deviceButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
 
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
+                    // Update frame size
+                    previewFrame.className = `preview-frame ${device}`;
+                });
+            });
+        }
+
+        // ================================
+        // FORM ENHANCEMENTS
+        // ================================
+
+        function setupFormEnhancements() {
+            const form = document.getElementById('website-form');
+
+            if (!form) return;
+
+            // Handle form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveChanges();
+            });
+
+            // Auto-save functionality (optional)
+            let autoSaveTimeout;
+            form.addEventListener('input', function() {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    // Auto-save after 10 seconds of inactivity
+                    // saveChanges(true); // Uncomment to enable auto-save
+                }, 10000);
+            });
+        }
+
+        function saveChanges(isAutoSave = false) {
+            const form = document.getElementById('website-form');
+            const saveBtn = document.querySelector('.save-btn');
+
+            if (!form) return;
+
+            // Update button state
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = isAutoSave ? 'Auto-saving...' : 'Saving...';
+            saveBtn.disabled = true;
+
+            fetch(form.action, {
+                method: 'PATCH',
+                body: new FormData(form),
+                headers: {
+                    'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Update preview
+                        updatePreview();
+
+                        // Show success message
+                        showNotification(
+                            isAutoSave ? 'Changes auto-saved' : 'Website updated successfully!',
+                            'success'
+                        );
+                    } else {
+                        showNotification('Error updating website', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Save error:', error);
+                    showNotification('Error saving changes', 'error');
+                })
+                .finally(() => {
+                    // Reset button state
+                    saveBtn.textContent = originalText;
+                    saveBtn.disabled = false;
+                });
+        }
+
+        // ================================
+        // COLOR PICKER ENHANCEMENTS
+        // ================================
+
+        function setupColorPickers() {
+            document.querySelectorAll('input[type="color"]').forEach(colorInput => {
+                // Update color value display on change
+                colorInput.addEventListener('input', function() {
+                    updateColorValue(this);
+                });
+
+                // Initialize color value display
+                updateColorValue(colorInput);
+            });
+        }
+
+        function updateColorValue(colorInput) {
+            const colorValue = colorInput.parentElement.querySelector('.color-value');
+            if (colorValue) {
+                colorValue.textContent = colorInput.value;
+                colorValue.style.borderColor = colorInput.value;
+            }
+        }
+
+        // ================================
+        // LOADING STATES
+        // ================================
+
+        function showLoadingState(input) {
+            input.setAttribute('data-loading', 'true');
+        }
+
+        function hideLoadingState(input) {
+            input.removeAttribute('data-loading');
+        }
+
+        // ================================
+        // NOTIFICATIONS
+        // ================================
+
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification').forEach(n => n.remove());
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
     <div class="notification-content">
       <span class="notification-icon">
         ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
@@ -422,117 +422,133 @@
     </div>
   `;
 
-        // Style the notification
-        Object.assign(notification.style, {
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            padding: '15px 20px',
-            borderRadius: '10px',
-            color: 'white',
-            fontWeight: '600',
-            fontSize: '0.9rem',
-            zIndex: '10000',
-            minWidth: '300px',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-            transform: 'translateX(400px)',
-            transition: 'all 0.3s ease'
-        });
+            // Style the notification
+            Object.assign(notification.style, {
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                padding: '15px 20px',
+                borderRadius: '10px',
+                color: 'white',
+                fontWeight: '600',
+                fontSize: '0.9rem',
+                zIndex: '10000',
+                minWidth: '300px',
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+                transform: 'translateX(400px)',
+                transition: 'all 0.3s ease'
+            });
 
-        // Set background color based on type
-        const colors = {
-            success: 'linear-gradient(45deg, #10b981, #059669)',
-            error: 'linear-gradient(45deg, #ef4444, #dc2626)',
-            info: 'linear-gradient(45deg, #3b82f6, #2563eb)'
-        };
-        notification.style.background = colors[type] || colors.info;
+            // Set background color based on type
+            const colors = {
+                success: 'linear-gradient(45deg, #10b981, #059669)',
+                error: 'linear-gradient(45deg, #ef4444, #dc2626)',
+                info: 'linear-gradient(45deg, #3b82f6, #2563eb)'
+            };
+            notification.style.background = colors[type] || colors.info;
 
-        document.body.appendChild(notification);
+            document.body.appendChild(notification);
 
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-
-        // Auto remove after 4 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
+            // Animate in
             setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 4000);
-    }
+                notification.style.transform = 'translateX(0)';
+            }, 100);
 
-    // ================================
-    // UTILITY FUNCTIONS
-    // ================================
-
-    function previewWebsite() {
-        const websiteId = window.location.pathname.split('/').pop().split('/')[0];
-        const previewUrl = `/manage/website_builder/${websiteId}/preview`;
-        window.open(previewUrl, '_blank', 'width=1200,height=800');
-    }
-
-    function previewTemplate(templateId) {
-        // This would open a template preview - implement based on your needs
-        console.log('Previewing template:', templateId);
-        showNotification('Template preview coming soon!', 'info');
-    }
-
-    // ================================
-    // KEYBOARD SHORTCUTS
-    // ================================
-
-    document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + S to save
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-            e.preventDefault();
-            saveChanges();
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 4000);
         }
 
-        // Ctrl/Cmd + P to preview
-        if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-            e.preventDefault();
-            previewWebsite();
+        // ================================
+        // UTILITY FUNCTIONS
+        // ================================
+
+        function previewWebsite() {
+            const websiteId = window.location.pathname.split('/').pop().split('/')[0];
+            const previewUrl = `/manage/website_builder/${websiteId}/preview`;
+            window.open(previewUrl, '_blank', 'width=1200,height=800');
         }
-    });
 
-    // ================================
-    // FORM VALIDATION
-    // ================================
+        function previewTemplate(templateId) {
+            // This would open a template preview - implement based on your needs
+            console.log('Previewing template:', templateId);
+            showNotification('Template preview coming soon!', 'info');
+        }
 
-    function validateForm() {
-        const form = document.getElementById('website-form');
-        const requiredFields = form.querySelectorAll('[required]');
-        let isValid = true;
+        // ================================
+        // KEYBOARD SHORTCUTS
+        // ================================
 
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('error');
-                isValid = false;
-            } else {
-                field.classList.remove('error');
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveChanges();
+            }
+
+            // Ctrl/Cmd + P to preview
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                previewWebsite();
             }
         });
 
-        return isValid;
-    }
+        // ================================
+        // FORM VALIDATION
+        // ================================
 
-    // ================================
-    // RESPONSIVE HELPERS
-    // ================================
+        function validateForm() {
+            const form = document.getElementById('website-form');
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
 
-    function handleMobileView() {
-        const sidebar = document.querySelector('.editor-sidebar');
-        const main = document.querySelector('.editor-main');
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                }
+            });
 
-        if (window.innerWidth < 1200) {
-            // Add mobile-specific behaviors
-            sidebar.style.position = 'relative';
-            sidebar.style.height = 'auto';
+            return isValid;
         }
-    }
 
-    window.addEventListener('resize', handleMobileView);
-    handleMobileView(); // Initial call
-</script>
+        // ================================
+        // RESPONSIVE HELPERS
+        // ================================
+
+        function handleMobileView() {
+            const sidebar = document.querySelector('.editor-sidebar');
+            const main = document.querySelector('.editor-main');
+
+            if (window.innerWidth < 1200) {
+                // Add mobile-specific behaviors
+                sidebar.style.position = 'relative';
+                sidebar.style.height = 'auto';
+            }
+        }
+
+        window.addEventListener('resize', handleMobileView);
+        handleMobileView(); // Initial call
+    </script>
+  </div>
+  <div style="width: 75%;">
+    <style>
+      <%= @website.compiled_css %>
+    </style>
+    <%= @website.compiled_html.html_safe %>
+
+    <script>
+        <%= @website.compiled_js %>
+    </script>
+  </div>
+</div>
+
+
+
+

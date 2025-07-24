@@ -16,15 +16,15 @@
         </div>
 
         <div class="flex space-x-3">
-          <%= link_to "Edit", edit_manage_website_builder_path(@website),
+          <%= link_to "Edit", edit_website_builder_path(@website),
                       class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium" %>
 
-          <%= link_to "Preview", preview_manage_website_builder_path(@website),
+          <%= link_to "Preview", preview_website_builder_path(@website),
                       target: "_blank",
                       class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium" %>
 
           <% if @website.published? %>
-            <%= link_to "Unpublish", unpublish_manage_website_builder_path(@website),
+            <%= link_to "Unpublish", unpublish_website_builder_path(@website),
                         method: :patch,
                         class: "bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium" %>
 
@@ -33,15 +33,11 @@
               Visit Live Site
             </a>
           <% else %>
-            <%= link_to "Publish", publish_manage_website_builder_path(@website),
+            <%= link_to "Publish", publish_website_builder_path(@website),
                         method: :patch,
                         class: "bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium" %>
           <% end %>
 
-          <%= link_to "Delete", manage_website_builder_path(@website),
-                      method: :delete,
-                      data: { confirm: "Are you sure? This cannot be undone." },
-                      class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium" %>
         </div>
       </div>
     </div>
@@ -105,7 +101,7 @@
     <div class="p-6 border-t">
       <h3 class="text-lg font-semibold mb-4">Website Preview</h3>
       <div class="border rounded-lg overflow-hidden" style="height: 500px;">
-        <iframe src="<%= preview_manage_website_builder_path(@website) %>"
+        <iframe src="<%= preview_website_builder_path(@website) %>"
                 class="w-full h-full"
                 frameborder="0">
         </iframe>

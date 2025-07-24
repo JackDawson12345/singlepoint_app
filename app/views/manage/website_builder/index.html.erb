@@ -2,7 +2,7 @@
 <div class="container mx-auto px-6 py-8">
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-gray-900">My Websites</h1>
-    <%= link_to "Create New Website", new_manage_website_builder_path,
+    <%= link_to "Create New Website", new_website_builder_path,
                 class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium" %>
   </div>
 
@@ -37,9 +37,9 @@
             </div>
 
             <div class="flex space-x-2">
-              <%= link_to "Edit", edit_manage_website_builder_path(website),
+              <%= link_to "Edit", edit_website_builder_path(website),
                           class: "flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded font-medium" %>
-              <%= link_to "View", manage_website_builder_path(website),
+              <%= link_to "View", website_builder_path(website),
                           class: "flex-1 bg-gray-600 hover:bg-gray-700 text-white text-center py-2 px-4 rounded font-medium" %>
             </div>
           </div>
@@ -55,7 +55,7 @@
       </div>
       <h3 class="text-xl font-medium text-gray-900 mb-2">No websites yet</h3>
       <p class="text-gray-600 mb-6">Get started by creating your first website from our template collection.</p>
-      <%= link_to "Create Your First Website", new_manage_website_builder_path,
+      <%= link_to "Create Your First Website", new_website_builder_path,
                   class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium" %>
     </div>
   <% end %>

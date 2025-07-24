@@ -1,6 +1,7 @@
 # app/controllers/manage/website_builder_controller.rb
 class Manage::WebsiteBuilderController < ApplicationController
-  layout 'manage'
+  layout 'template_edit'
+
   before_action :authenticate_user!
   before_action :ensure_order_completed
   before_action :set_website, except: [:index, :new, :create, :choose_template]

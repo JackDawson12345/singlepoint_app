@@ -5,25 +5,6 @@ Rails.application.routes.draw do
     sessions: 'users/sessions'
   }
 
-  namespace :manage do
-    get "domains/index"
-    get "panel/index"
-
-    # Website Builder routes
-    resources :website_builder do
-      collection do
-        get :choose_template
-      end
-
-      member do
-        get :preview
-        patch :publish
-        patch :unpublish
-        post :update_preview
-      end
-    end
-  end
-
   namespace :admin do
     get "dashboard/index"
 
@@ -50,6 +31,19 @@ Rails.application.routes.draw do
         get :payment_success
         get :payment_failed
         get :confirmation
+      end
+    end
+
+    resources :website_builder, controller: 'manage/website_builder' do
+      collection do
+        get :choose_template
+      end
+
+      member do
+        get :preview
+        patch :publish
+        patch :unpublish
+        post :update_preview
       end
     end
   end
